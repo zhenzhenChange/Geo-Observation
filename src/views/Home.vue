@@ -1,18 +1,26 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <Map @open-modal="handleOpenModal" />
+    <Modal :visible="visible" :params="params" @close-modal="handleCloseModal" />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import Map from '@/views/Map';
+import Modal from '@/views/Modal';
 
 export default {
-  name: "Home",
-  components: {
-    HelloWorld
-  }
+  name: 'Home',
+  components: { Map, Modal },
+  data: () => ({ visible: false, params: {} }),
+  methods: {
+    handleOpenModal(params) {
+      this.visible = true;
+      this.params = { ...params };
+    },
+    handleCloseModal() {
+      this.visible = false;
+    },
+  },
 };
 </script>
