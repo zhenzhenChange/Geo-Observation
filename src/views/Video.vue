@@ -1,58 +1,107 @@
 <template>
-  <video
-    id="mapVideo"
-    class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-    controls
-    preload="auto"
-    webkit-playsinline="true"
-    playsinline="true"
-    type="application/x-mpegURL"
-    allowsInlineMediaPlayback="YES"
-    webview.allowsInlineMediaPlayback="YES"
-    width="100%"
-    ref="videoRef"
-    x5-video-player-fullscreen="true"
-    :poster="posterSrc"
-  >
-    <source id="sourceBox" :src="videoSrc" />
-    <p class="vjs-no-js">不支持播放</p>
-  </video>
+  <div id="mapVideo"></div>
 </template>
 
 <script>
-import 'videojs-contrib-hls';
-import video from 'video.js';
-
-const options = {
-  bigPlayButton: true,
-  textTrackDisplay: true,
-  posterImage: true,
-  errorDisplay: false,
-  controlBar: false,
-  playbackRates: [0.5, 1, 1.5, 2],
-  ControlBar: {
-    customControlSpacer: true,
-  },
-};
+// import flv from 'flv.js';
+import Hls from 'hls.js';
+import DPlayer from 'dplayer';
 
 export default {
   name: 'MapVideo',
   data: () => ({
     mapVideo: '',
-    videoSrc:
-      'https://vdept.bdstatic.com/6a764d366843596b5566385937673144/3854733856553378/c8b639388bc9637913cd94ff6203b64b3abc3e851def2e8533985fd83becdfaea7d88b717ef4f8f75d30ec7a8f11dcf7.mp4?auth_key=1597322383-0-0-ea1650ec2b0f32a47688c98a80b60c46',
+    videoSrc: 'http://tanjm999.uav-cas.ac.cn/live/guilin-ab30d3e0.m3u8',
     posterSrc:
       'https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg',
+    address: 'http://192.168.3.16:8848',
+    id: '',
+    pushRequest: {
+      markList: [],
+    },
+    stopRequest: {
+      idList: [],
+    },
   }),
   mounted() {
-    const that = this;
-    this.mapVideo = video(this.$refs.videoRef, options, function() {
-      console.log(that);
-      console.log(this);
+    new DPlayer({
+      container: document.getElementById('mapVideo'),
+      video: {
+        url: this.videoSrc,
+        /* type: 'customFlv',
+        customType: {
+          customFlv(video, player) {
+            const flvPlayer = flv.createPlayer({
+              type: 'flv',
+              url: video.src,
+            });
+            flvPlayer.attachMediaElement(video);
+            flvPlayer.load();
+            console.log(player);
+          },
+        }, */
+        type: 'customHls',
+        customType: {
+          customHls(video /* player */) {
+            const hls = new Hls();
+            hls.loadSource(video.src);
+            hls.attachMedia(video);
+          },
+        },
+      },
     });
   },
-  destroyed() {
-    this.mapVideo.dispose();
+  created() {
+    this.getInfo();
+    this.pushVideo();
+    this.stopVideo();
+    this.isAlive();
+  },
+  methods: {
+    //获取信息函数
+    getInfo: function() {
+      this.$HTTP.get(this.address + '/api/steam/info').then(
+        resp => {
+          console.log(resp);
+        },
+        err => {
+          console.log(err);
+        },
+      );
+    },
+    //拉流函数
+    pushVideo: function() {
+      this.$HTTP.post(this.address + '/api/stream/push', this.pushRequest).then(
+        resp => {
+          console.log(resp);
+        },
+        err => {
+          console.log(err);
+        },
+      );
+    },
+    //停流函数
+    stopVideo: function() {
+      this.$HTTP.post(this.address + '/api/stream/stop', this.stopRequest).then(
+        resp => {
+          console.log(resp);
+        },
+        err => {
+          console.log(err);
+        },
+      );
+    },
+    //检查进程是否运行的函数
+    isAlive: function() {
+      this.$HTTP.get(this.address + '/api/steam/alive?id=' + this.id).then(
+        resp => {
+          console.log(resp);
+        },
+        err => {
+          console.log(err);
+        },
+      );
+    },
   },
 };
 </script>
