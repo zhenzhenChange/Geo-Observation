@@ -12,7 +12,7 @@
   >
     <!-- 模态窗 - 头部 -->
     <template slot="title">
-      <span><a-icon type="plus" class="mr-4" />{{ title }}</span>
+      <span><a-icon type="home" class="mr-4" />{{ params.name }}</span>
     </template>
 
     <!-- 模态窗 - 主体（插槽：用于内容填充） -->
@@ -24,9 +24,7 @@
     <!-- 模态窗 - 底部 -->
     <template slot="footer">
       <a-button icon="rollback" @click="handleCancel">取消</a-button>
-      <a-button icon="check-circle" type="primary" :loading="loading" @click="handleOk">
-        提交
-      </a-button>
+      <a-button icon="check-circle" type="primary" @click="handleOk">确定</a-button>
     </template>
   </a-modal>
 </template>
@@ -35,10 +33,9 @@
 import MapVideo from '@/views/Video';
 
 export default {
-  // 基础模态窗
-  name: 'BaseModal',
+  name: 'AreaModal',
   props: {
-    // 模态窗宽度
+    // 控制模态窗的显示状态
     visible: {
       type: Boolean,
       required: true,
@@ -47,60 +44,14 @@ export default {
       type: Object,
       required: true,
     },
-    // 模态窗标题
-    title: {
-      type: String,
-      default: '提示',
-    },
-    // 消息通知 - 接收父组件表单校验情况
-    notify: {
-      type: Boolean,
-      default: false,
-    },
   },
   components: { MapVideo },
-  data: () => ({
-    // 按钮 loading 控制
-    loading: false,
-  }),
   methods: {
-    /**
-     * 提交按钮
-     * 1.触发父组件提交表单事件
-     * 2.根据表单校验结果决定是否继续执行
-     * 3.切换 loading
-     * 4.延迟关闭
-     * 5.使用父级作用域的关闭事件关闭模态窗
-     */
     handleOk() {
       this.$emit('close-modal');
-
-      /**
-       * 1.父组件状态（数据）发生改变
-       * 2.但组件更新是异步的，本事件处理是同步的
-       * 3.所以本组件需在下一轮事件循环读取最新的状态（数据）
-       */
-      // this.$nextTick(() => {
-      //   if (this.notify) return;
-      //   this.toggleLoading();
-      //   setTimeout(() => {
-      //     this.toggleLoading();
-      //     this.$emit('close-modal');
-      //   }, 2000);
-      // });
     },
-
-    /**
-     * 取消按钮
-     * 1.使用父级作用域的关闭事件关闭模态窗
-     */
     handleCancel() {
       this.$emit('close-modal');
-    },
-
-    /* 切换 loading */
-    toggleLoading() {
-      this.loading = !this.loading;
     },
   },
 };

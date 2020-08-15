@@ -16,22 +16,17 @@ export default {
   mounted() {
     const map = echarts.init(document.getElementById('map'), 'shine');
     map.setOption(mapOptions);
-
-    map.on('click', params => {
-      this.$emit('open-modal', params);
-    });
-
-    window.onresize = function() {
-      // resizeMyChartContainer();
-      map.resize();
-    };
+    map.on('click', params => void this.$emit('open-modal', params));
+    window.onresize = () => void map.resize();
   },
 };
 </script>
 
 <style lang="scss" scoped>
 #map {
-  width: 100vw;
-  height: 100vh;
+  width: 45vw;
+  height: 45vw;
+  margin: 0 auto;
+  border: solid 1px #124583;
 }
 </style>

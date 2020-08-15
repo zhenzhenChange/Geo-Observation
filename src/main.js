@@ -3,6 +3,7 @@ import App from './App.vue';
 import router from './router';
 
 import axios from 'axios';
+import '@/assets/css/style.scss';
 
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';

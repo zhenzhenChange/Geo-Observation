@@ -11,17 +11,13 @@ export default {
   name: 'MapVideo',
   data: () => ({
     mapVideo: '',
-    videoSrc: 'http://tanjm999.uav-cas.ac.cn/live/guilin-ab30d3e0.m3u8',
+    videoSrc: 'http://tanjm999.uav-cas.ac.cn/live/guilin-697910a9.m3u8',
     posterSrc:
       'https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg',
     address: 'http://192.168.3.16:8848',
     id: '',
-    pushRequest: {
-      markList: [],
-    },
-    stopRequest: {
-      idList: [],
-    },
+    pushRequest: { markList: [] },
+    stopRequest: { idList: [] },
   }),
   mounted() {
     new DPlayer({
