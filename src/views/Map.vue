@@ -1,5 +1,7 @@
 <template>
-  <div id="map"></div>
+  <div class="echarts-map">
+    <div id="map"></div>
+  </div>
 </template>
 
 <script>
@@ -10,23 +12,41 @@ import chinaMapGeo from 'echarts/map/json/china.json';
 
 export default {
   name: 'Map',
+  data: () => ({ map: '' }),
   created() {
     echarts.registerMap('china', chinaMapGeo);
   },
   mounted() {
-    const map = echarts.init(document.getElementById('map'), 'shine');
-    map.setOption(mapOptions);
-    map.on('click', params => void this.$emit('open-modal', params));
-    window.onresize = () => void map.resize();
+    setTimeout(() => {
+      this.map = echarts.init(document.getElementById('map'));
+      this.renderMap();
+    });
+
+    window.addEventListener('resize', () => void this.map.resize());
+  },
+  methods: {
+    renderMap() {
+      this.map = echarts.init(document.getElementById('map'));
+      /* 赋值为新数据 */
+      // mapOptions.series.find(option => option.type == 'effectScatter').data = [];
+
+      this.map.setOption(mapOptions);
+      this.map.on('click', params => void this.$emit('open-drawer', params));
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-#map {
-  width: 45vw;
-  height: 45vw;
+.echarts-map {
   margin: 0 auto;
-  border: solid 1px #124583;
+  width: calc(100% - 75px);
+  height: calc(100vh - 75px);
+
+  #map {
+    width: 100%;
+    height: 100%;
+    border: solid 1px #124583;
+  }
 }
 </style>

@@ -3,10 +3,13 @@
 </template>
 
 <style lang="scss">
-body,
-html {
+* {
   margin: 0;
   padding: 0;
+}
+
+body {
+  background-color: #0d325f !important;
 }
 
 #app {
