@@ -62,25 +62,22 @@
 import Map from '@/views/Map';
 import AreaDrawer from '@/views/AreaDrawer';
 
-// 首次初始化所有地区数据 type: 'allInfo'
-const initMessage = {
-  msg: '',
-  list: [],
-  type: 'allInfo',
-  location: '',
-};
-
 export default {
   name: 'Home',
   components: { Map, AreaDrawer },
-  data: () => ({ socket: '', params: {}, mapData: '', visible: false }),
+  data: () => ({
+    socket: '',
+    params: {},
+    mapData: '',
+    visible: false,
+  }),
   created() {
     this.initWebSocket();
   },
   methods: {
     handleOpenDrawer(params) {
       this.visible = true;
-      this.params = { ...params };
+      this.params = params;
       console.log(params);
     },
     handleCloseDrawer() {
@@ -89,11 +86,30 @@ export default {
     initWebSocket() {
       /* 请求中控后台，接受地区心跳包，点亮地图 */
       this.socket = new WebSocket('ws://120.79.196.97:8888/ws/server/zhenzhen');
-      this.socket.onopen = () => void this.sendMessage(initMessage);
-      this.socket.onmessage = event => void (this.mapData = JSON.parse(event.data));
+      this.socket.onopen = () => void this.initStream();
+      this.socket.onmessage = event => {
+        this.mapData = JSON.parse(event.data);
+        const aircraftMarkAry = this.mapData.aircraftList.map(item => item.mark);
+        this.pushStream(aircraftMarkAry);
+      };
     },
     sendMessage(msg) {
       this.socket.send(JSON.stringify(msg));
+    },
+    initStream() {
+      const initMessage = { msg: '', list: [], type: 'allInfo', location: '' };
+      this.sendMessage(initMessage);
+    },
+    pushStream(push) {
+      const pushMessage = { msg: '推流', list: push, type: 'push', location: 'guilin' };
+      this.sendMessage(pushMessage);
+    },
+    pullStream(pull) {
+      // const pullMessage = {};
+      this.sendMessage(pull);
+    },
+    stopStream(stop) {
+      this.sendMessage(stop);
     },
   },
 };
