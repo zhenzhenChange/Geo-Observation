@@ -9,11 +9,10 @@ import DPlayer from 'dplayer';
 
 export default {
   name: 'MapVideo',
+  props: ['m3u8'],
   data: () => ({
     mapVideo: '',
     videoSrc: 'http://tanjm999.uav-cas.ac.cn/live/guilin-697910a9.m3u8',
-    posterSrc:
-      'https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg',
     address: 'http://192.168.3.16:8848',
     id: '',
     pushRequest: { markList: [] },
@@ -23,7 +22,7 @@ export default {
     new DPlayer({
       container: document.getElementById('mapVideo'),
       video: {
-        url: this.videoSrc,
+        url: this.m3u8,
         /* type: 'customFlv',
         customType: {
           customFlv(video, player) {
@@ -48,10 +47,10 @@ export default {
     });
   },
   created() {
-    this.getInfo();
-    this.pushVideo();
-    this.stopVideo();
-    this.isAlive();
+    // this.getInfo();
+    // this.pushVideo();
+    // this.stopVideo();
+    // this.isAlive();
   },
   methods: {
     //获取信息函数

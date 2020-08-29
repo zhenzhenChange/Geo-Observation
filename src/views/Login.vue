@@ -50,15 +50,16 @@
 <script>
 export default {
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'normal_login' });
+    this.form = this.$form.createForm(this, { name: 'MapLogin' });
   },
   methods: {
     handleSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values);
-        }
+        if (err) return console.log('Errors: ', err);
+        console.log(values);
+        localStorage.setItem('guarder', values.username);
+        this.$router.push('/');
       });
     },
   },

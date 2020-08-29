@@ -31,7 +31,9 @@
         <Map @open-drawer="handleOpenDrawer" />
       </a-col>
       <a-col :span="4" class="right">
-        <a-card class="right-plate" :bordered="false">
+        <a-button @click="stopStream(ids)">Stop</a-button>
+        <MapVideo v-if="m3u8" :m3u8="m3u8" />
+        <!--<a-card class="right-plate" :bordered="false">
           <img slot="cover" :src="require('@/assets/images/options.jpg')" />
           <a-card-meta title="在线地区" description="This is very cool~" />
         </a-card>
@@ -46,7 +48,7 @@
         <a-card class="right-plate" :bordered="false">
           <img slot="cover" :src="require('@/assets/images/options.jpg')" />
           <a-card-meta title="消息通知" description="This is very cool~" />
-        </a-card>
+        </a-card>-->
       </a-col>
     </a-row>
     <AreaDrawer
@@ -60,12 +62,14 @@
 
 <script>
 import Map from '@/views/Map';
+import MapVideo from '@/views/Video';
 import AreaDrawer from '@/views/AreaDrawer';
 
 export default {
   name: 'Home',
-  components: { Map, AreaDrawer },
+  components: { Map, MapVideo, AreaDrawer },
   data: () => ({
+    m3u8: '',
     socket: '',
     params: {},
     mapData: '',
@@ -89,8 +93,27 @@ export default {
       this.socket.onopen = () => void this.initStream();
       this.socket.onmessage = event => {
         this.mapData = JSON.parse(event.data);
-        const aircraftMarkAry = this.mapData.aircraftList.map(item => item.mark);
-        this.pushStream(aircraftMarkAry);
+        console.log(this.mapData.type, this.mapData);
+        switch (this.mapData.type) {
+          case 'push':
+            console.log('push');
+            this.m3u8 = this.mapData.aircraftList[0].resultUrl.m3u8Url;
+            this.ids = this.mapData.aircraftList.map(item => item.id);
+            break;
+          case 'pull':
+            console.log('pull');
+            break;
+          case 'stop':
+            console.log('stop');
+            break;
+          case 'info':
+            console.log('info');
+            this.pushStream(this.mapData.aircraftList.map(item => item.mark));
+            break;
+          case 'allInfo':
+            console.log('allInfo');
+            break;
+        }
       };
     },
     sendMessage(msg) {
@@ -105,11 +128,12 @@ export default {
       this.sendMessage(pushMessage);
     },
     pullStream(pull) {
-      // const pullMessage = {};
-      this.sendMessage(pull);
+      const pullMessage = { msg: '拉流', list: pull, type: 'pull', location: 'guilin' };
+      this.sendMessage(pullMessage);
     },
     stopStream(stop) {
-      this.sendMessage(stop);
+      const stopMessage = { msg: '停流', list: stop, type: 'stop', location: 'guilin' };
+      this.sendMessage(stopMessage);
     },
   },
 };
